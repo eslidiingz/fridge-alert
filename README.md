@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ตู้เย็นเตือนภัย — Food Expiry Tracker
 
-## Getting Started
+Next.js 16 + Aceternity UI + motion · Neon Postgres (Drizzle) · Vercel Cron · Web Push · LINE Messaging API
 
-First, run the development server:
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local   # or: vercel env pull .env.local
+pnpm db:push                 # create tables in Neon
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Env | How to get it |
+|---|---|
+| `DATABASE_URL` | Vercel → Storage/Marketplace → Neon, then `vercel env pull .env.local` |
+| `AUTH_SECRET` | `openssl rand -base64 32` |
+| `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH` | `pnpm hash-password '<password>'` |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | `pnpm dlx web-push generate-vapid-keys` |
+| `LINE_CHANNEL_ACCESS_TOKEN` / `LINE_CHANNEL_SECRET` | LINE Developers Console → Messaging API channel |
+| `CRON_SECRET` | any random string; Vercel Cron sends it as `Authorization: Bearer …` |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## LINE group notifications
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+LINE Notify was shut down on 2025‑03‑31, so this app uses the **Messaging API**:
 
-## Learn More
+1. Create a LINE Official Account and enable Messaging API (LINE Developers Console).
+2. In the channel settings: set **Webhook URL** to `https://<your-domain>/api/line/webhook`, turn **Use webhook** on, and allow the bot to **join groups**.
+3. Put the channel access token + secret in Vercel env vars and redeploy.
+4. Invite the bot into the family group. It replies with a greeting and saves the group ID automatically
+   (or type `/register` in the group to re-register).
 
-To learn more about Next.js, take a look at the following resources:
+The daily digest runs at **07:00 Asia/Bangkok** (`0 0 * * *` UTC, see `vercel.ts`). On the Hobby plan the run can land anywhere in that hour.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Test it manually:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" https://<your-domain>/api/cron/daily
+```
 
-## Deploy on Vercel
+## Web Push
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Tap the bell icon in the dashboard header to enable push on that device. On iPhone you must first **Add to Home Screen** (iOS 16.4+), then open the app from the home screen.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Expiry status
+
+| Status | Days left |
+|---|---|
+| หมดอายุแล้ว | < 0 |
+| ใกล้หมดมาก | 0–3 |
+| ใกล้หมด | 4–7 |
+| ยังสด | > 7 |
