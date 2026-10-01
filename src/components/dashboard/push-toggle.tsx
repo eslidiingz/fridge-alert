@@ -130,9 +130,15 @@ export function PushToggle() {
         <motion.span
           key={state}
           initial={{ rotate: -30, opacity: 0 }}
-          animate={state === "busy" ? { rotate: [0, -15, 15, -10, 10, 0], opacity: 1 } : { rotate: 0, opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={state === "busy" ? { repeat: Infinity, duration: 0.8 } : { duration: 0.2 }}
+          animate={
+            state === "busy"
+              ? { rotate: [0, -15, 15, -10, 10, 0], opacity: 1, transition: { rotate: { repeat: Infinity, duration: 0.8 } } }
+              : { rotate: 0, opacity: 1 }
+          }
+          // Explicit exit transition: otherwise the busy state's infinite repeat applies to the exit too,
+          // the exit never finishes, and mode="wait" keeps the shaking bell on screen forever.
+          exit={{ opacity: 0, transition: { duration: 0.15 } }}
+          transition={{ duration: 0.2 }}
         >
           <Icon className="size-5" />
         </motion.span>
