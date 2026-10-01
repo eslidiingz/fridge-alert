@@ -7,7 +7,7 @@ import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Spotlight } from "@/components/ui/spotlight-new";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 
-export const metadata: Metadata = { title: "เข้าสู่ระบบ · ตู้เย็นเตือนภัย" };
+export const metadata: Metadata = { title: "เข้าสู่ระบบ · ตู้เย็นแจ้งเตือน" };
 
 export default function LoginPage() {
   return (
@@ -23,7 +23,7 @@ export default function LoginPage() {
       <FadeIn className="relative z-10 w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
           <BrandMark size="lg" />
-          <TextGenerateEffect words="ตู้เย็น เตือนภัย" className="mt-4 text-3xl [&_div]:text-3xl" />
+          <TextGenerateEffect words="ตู้เย็น แจ้งเตือน" className="mt-4 text-3xl [&_div]:text-3xl" />
           <p className="mt-1 text-sm text-muted-foreground">เข้าสู่ระบบเพื่อจัดการอาหารในตู้เย็นของบ้าน</p>
         </div>
         <div className="rounded-3xl border border-border bg-card/70 p-6 shadow-2xl shadow-black/10 backdrop-blur-xl dark:shadow-black/40">

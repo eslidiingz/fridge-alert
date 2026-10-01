@@ -5,9 +5,7 @@ import { z } from "zod";
 import { safeEqual, verifyPassword } from "@/lib/auth/password";
 import { createSession, deleteSession } from "@/lib/auth/session";
 
-export type LoginState =
-  | { error?: string; fieldErrors?: { username?: string; password?: string }; username?: string }
-  | undefined;
+export type LoginState = { error?: string; fieldErrors?: { username?: string; password?: string } } | undefined;
 
 const loginSchema = z.object({
   username: z.string().trim().min(1, "กรุณากรอกชื่อผู้ใช้"),
@@ -19,10 +17,9 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     username: formData.get("username"),
     password: formData.get("password"),
   });
-  const typedUsername = String(formData.get("username") ?? "");
   if (!parsed.success) {
     const errors = z.flattenError(parsed.error).fieldErrors;
-    return { fieldErrors: { username: errors.username?.[0], password: errors.password?.[0] }, username: typedUsername };
+    return { fieldErrors: { username: errors.username?.[0], password: errors.password?.[0] } };
   }
 
   const { username, password } = parsed.data;
@@ -30,7 +27,7 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
   const userOk = expectedUser.length > 0 && safeEqual(username, expectedUser);
   const passOk = verifyPassword(password, process.env.ADMIN_PASSWORD_HASH);
   if (!userOk || !passOk) {
-    return { error: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", username: typedUsername };
+    return { error: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" };
   }
 
   await createSession(username);

@@ -11,9 +11,9 @@ const plexThai = IBM_Plex_Sans_Thai({
 });
 
 export const metadata: Metadata = {
-  title: "ตู้เย็นเตือนภัย",
+  title: "ตู้เย็นแจ้งเตือน",
   description: "ติดตามและแจ้งเตือนอาหารใกล้หมดอายุ",
-  appleWebApp: { capable: true, title: "ตู้เย็นเตือนภัย", statusBarStyle: "black-translucent" },
+  appleWebApp: { capable: true, title: "ตู้เย็นแจ้งเตือน", statusBarStyle: "black-translucent" },
 };
 
 export const viewport: Viewport = {

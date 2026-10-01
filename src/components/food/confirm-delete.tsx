@@ -31,7 +31,7 @@ export function ConfirmDelete({ item, open, onClose }: { item: FoodView | null; 
         <motion.div
           initial={{ scale: 0, rotate: -20 }}
           animate={{ scale: 1, rotate: [0, -10, 10, -6, 0] }}
-          transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          transition={{ scale: { type: "spring", stiffness: 300, damping: 15 }, default: { duration: 0.5, ease: "easeOut" } }}
           className="grid size-16 place-items-center rounded-full bg-red-500/15 text-red-500"
         >
           <Trash2 className="size-8" />

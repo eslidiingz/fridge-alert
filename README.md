@@ -1,4 +1,4 @@
-# ตู้เย็นเตือนภัย — Food Expiry Tracker
+# ตู้เย็นแจ้งเตือน — Food Expiry Tracker
 
 Next.js 16 + Aceternity UI + motion · Neon Postgres (Drizzle) · Vercel Cron · Web Push · LINE Messaging API
 

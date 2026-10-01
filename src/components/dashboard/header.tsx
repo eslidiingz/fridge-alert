@@ -1,9 +1,8 @@
 "use client";
 
 import { motion } from "motion/react";
-import { LogOut } from "lucide-react";
-import { logout } from "@/actions/auth";
 import { BrandMark } from "./brand-mark";
+import { LogoutButton } from "./logout-button";
 import { PushToggle } from "./push-toggle";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -18,23 +17,12 @@ export function DashboardHeader({ todayLabel }: { todayLabel: string }) {
       <div className="mx-auto flex max-w-3xl items-center gap-3">
         <BrandMark />
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-lg font-semibold leading-tight">ตู้เย็นเตือนภัย</h1>
+          <h1 className="truncate text-lg font-semibold leading-tight">ตู้เย็นแจ้งเตือน</h1>
           <p className="truncate text-xs text-muted-foreground">{todayLabel}</p>
         </div>
         <PushToggle />
         <ThemeToggle />
-        <form action={logout}>
-          <motion.button
-            type="submit"
-            whileTap={{ scale: 0.85 }}
-            whileHover={{ scale: 1.08 }}
-            className="grid size-10 place-items-center rounded-xl border border-border bg-background/50 text-foreground/70 backdrop-blur hover:text-red-500"
-            aria-label="ออกจากระบบ"
-            title="ออกจากระบบ"
-          >
-            <LogOut className="size-5" />
-          </motion.button>
-        </form>
+        <LogoutButton />
       </div>
     </motion.header>
   );

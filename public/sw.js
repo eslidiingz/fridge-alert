@@ -3,7 +3,7 @@ self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
 
 self.addEventListener("push", (event) => {
-  let data = { title: "ตู้เย็นเตือนภัย", body: "", url: "/dashboard" };
+  let data = { title: "ตู้เย็นแจ้งเตือน", body: "", url: "/dashboard" };
   try {
     if (event.data) data = { ...data, ...event.data.json() };
   } catch {

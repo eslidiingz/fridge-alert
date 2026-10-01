@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { useEffect, useRef } from "react";
 import { STATUS_META, type ExpiryStatus } from "@/lib/expiry";
 import { cn } from "@/lib/utils";
 
@@ -8,9 +9,18 @@ export type Filter = ExpiryStatus | "all";
 const TABS: Filter[] = ["all", "expired", "urgent", "soon", "fresh"];
 
 export function FilterTabs({ value, onChange, counts }: { value: Filter; onChange: (f: Filter) => void; counts: Record<Filter, number> }) {
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // Keep the selected tab visible when it is chosen from the stat cards.
+  useEffect(() => {
+    listRef.current
+      ?.querySelector<HTMLElement>('[aria-selected="true"]')
+      ?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }, [value]);
+
   return (
-    <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none]">
-      <div role="tablist" className="flex w-max gap-1 rounded-2xl border border-border bg-card/50 p-1">
+    <div className="w-full overflow-hidden rounded-2xl border border-border bg-card/50">
+      <div ref={listRef} role="tablist" className="flex gap-1 overflow-x-auto p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {TABS.map((t) => {
           const selected = value === t;
           return (
@@ -21,7 +31,7 @@ export function FilterTabs({ value, onChange, counts }: { value: Filter; onChang
               aria-selected={selected}
               onClick={() => onChange(t)}
               className={cn(
-                "relative rounded-xl px-3.5 py-2 text-sm font-medium transition-colors",
+                "relative shrink-0 rounded-xl px-3.5 py-2 text-sm font-medium transition-colors sm:flex-1",
                 selected ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >

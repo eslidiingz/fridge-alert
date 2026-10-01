@@ -15,7 +15,20 @@ const item = {
 export function LoginForm() {
   const [state, action, pending] = useActionState<LoginState, FormData>(login, undefined);
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [nonEnglish, setNonEnglish] = useState(false);
   const fe = state?.fieldErrors;
+
+  // Only accept printable ASCII (English keyboard); drop anything else as it is typed.
+  function englishOnly(setter: (v: string) => void) {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = e.target.value;
+      const clean = raw.replace(/[^\x20-\x7E]/g, "");
+      setNonEnglish(clean !== raw);
+      setter(clean);
+    };
+  }
 
   return (
     <motion.form
@@ -32,8 +45,12 @@ export function LoginForm() {
           <Input
             id="username"
             name="username"
-            defaultValue={state?.username}
+            value={username}
+            onChange={englishOnly(setUsername)}
+            lang="en"
             autoComplete="username"
+            autoCorrect="off"
+            spellCheck={false}
             autoCapitalize="none"
             placeholder="admin"
             aria-invalid={!!fe?.username}
@@ -51,7 +68,12 @@ export function LoginForm() {
               id="password"
               name="password"
               type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={englishOnly(setPassword)}
+              lang="en"
               autoComplete="current-password"
+              autoCorrect="off"
+              spellCheck={false}
               placeholder="••••••••"
               className="pr-12"
               aria-invalid={!!fe?.password}
@@ -80,6 +102,21 @@ export function LoginForm() {
           <FieldError id="password-error" message={fe?.password} />
         </Field>
       </motion.div>
+
+      <AnimatePresence>
+        {nonEnglish && (
+          <motion.p
+            key="non-english"
+            role="status"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="-mt-2 text-sm text-amber-600 dark:text-amber-400"
+          >
+            ⌨️ กรอกได้เฉพาะภาษาอังกฤษ — กรุณาเปลี่ยนแป้นพิมพ์เป็น EN
+          </motion.p>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {state?.error && (

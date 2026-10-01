@@ -5,7 +5,7 @@ import { requireSession } from "@/lib/auth/session";
 import { APP_TIMEZONE } from "@/lib/expiry";
 import { listFoodWithStatus } from "@/lib/food";
 
-export const metadata: Metadata = { title: "ตู้เย็นของฉัน · ตู้เย็นเตือนภัย" };
+export const metadata: Metadata = { title: "ตู้เย็นของฉัน · ตู้เย็นแจ้งเตือน" };
 
 export default async function DashboardPage() {
   await requireSession();
