@@ -15,6 +15,18 @@ function urlBase64ToUint8Array(base64: string) {
   return Uint8Array.from(raw, (c) => c.charCodeAt(0));
 }
 
+// Some browsers (notably Brave with Google push services off) never settle subscribe(); don't spin forever.
+function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
+  return Promise.race([promise, new Promise<never>((_, reject) => setTimeout(() => reject(new Error(message)), ms))]);
+}
+
+async function isBrave() {
+  const brave = (navigator as Navigator & { brave?: { isBrave?: () => Promise<boolean> } }).brave;
+  return (await brave?.isBrave?.().catch(() => false)) ?? false;
+}
+
+const SUBSCRIBE_TIMEOUT_MS = 15_000;
+
 export function PushToggle() {
   const [state, setState] = useState<State>("loading");
 
@@ -43,11 +55,15 @@ export function PushToggle() {
         setState("off");
         return;
       }
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
-      });
+      const reg = await withTimeout(navigator.serviceWorker.ready, SUBSCRIBE_TIMEOUT_MS, "Service worker ไม่พร้อมใช้งาน");
+      const sub = await withTimeout(
+        reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
+        }),
+        SUBSCRIBE_TIMEOUT_MS,
+        "เบราว์เซอร์ไม่ตอบสนองการลงทะเบียนแจ้งเตือน",
+      );
       const res = await savePushSubscription(sub.toJSON());
       if (!res.ok) throw new Error(res.error);
       setState("on");
@@ -56,7 +72,12 @@ export function PushToggle() {
         action: { label: "ทดสอบ", onClick: () => void test() },
       });
     } catch (err) {
-      toast.error("เปิดแจ้งเตือนไม่สำเร็จ", { description: err instanceof Error ? err.message : undefined });
+      const description = (await isBrave())
+        ? "Brave: เปิด “Use Google services for push messaging” ที่ brave://settings/privacy แล้วรีสตาร์ทเบราว์เซอร์"
+        : err instanceof Error
+          ? err.message
+          : undefined;
+      toast.error("เปิดแจ้งเตือนไม่สำเร็จ", { description, duration: 10_000 });
       setState("off");
     }
   }
