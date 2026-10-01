@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "ตู้เย็นแจ้งเตือน — Food Expiry Tracker",
-    short_name: "ตู้เย็น",
+    short_name: "Fridge Alert",
     description: "ติดตามและแจ้งเตือนอาหารใกล้หมดอายุ",
     start_url: "/dashboard",
     display: "standalone",
